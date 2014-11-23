@@ -1,15 +1,38 @@
-## Put comments here that give an overall description of what your
-## functions do
+## The two functions below are used to find the inverse of a matrix x. 
+## This function creates a special R object that 
+## 1. Initializes a variable 'm' 
+##    (which will be used to save inverse matrix latter, i.e. a cached data);
+## 2. Provides function get() to obtain "raw" matrix (of which one needs to find 
+##    its inverse);
+## 3. Provides function setImatrix() to assign computed inverse matrix (of x) to m;
+## 4. Provides function getImatrix() to obtain the cached inverse matrix.
 
-## Write a short comment describing this function
-
-makeCacheMatrix <- function(x = matrix()) {
-
+makeCacheMatrix <- function(x=matrix()) {
+  m <- NULL
+  get <- function() x
+  setImatrix <- function(Imatrix) m <<- Imatrix
+  getImatrix <- function() m
+  
+  list(get=get, setImatrix=setImatrix, getImatrix=getImatrix)
 }
 
+## This function does the actual inversing of matrix x.  It first checks if the in-
+## verse matrix has been found; if yes, returns the result and quits. If not, the 
+## inverse of x is calculated, saved to cached, and returned.
 
-## Write a short comment describing this function
 
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+cacheSolve <- function(x) {
+  m <- x$getImatrix()
+  if(!is.null(m)){
+    message("Cached data found. Getting result,Successfully Completed.")
+    return(m)
+  }
+  else {
+    message("No cached data found. Calculating Inverse of Matrix")
+    data <- x$get() 
+    m <- solve(data) 
+    x$setImatrix(m) 
+    message("Completed")
+    return(m)
+  }
 }
